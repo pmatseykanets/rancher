@@ -65,6 +65,9 @@ type User struct {
 
 type UserStatus struct {
 	Conditions []UserCondition `json:"conditions"`
+	// The date and time the user last logged in.
+	// +optional
+	LastSeenAt metav1.Time `json:"lastSeenAt,omitempty"`
 }
 
 type UserCondition struct {

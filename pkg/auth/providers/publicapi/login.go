@@ -218,5 +218,15 @@ func (h *loginHandler) createLoginToken(request *types.APIContext) (v3.Token, st
 	userExtraInfo := providers.GetUserExtraAttributes(providerName, userPrincipal)
 
 	rToken, unhashedTokenKey, err := h.tokenMGR.NewLoginToken(currUser.Name, userPrincipal, groupPrincipals, providerToken, ttl, description, userExtraInfo)
+	if err != nil {
+		return v3.Token{}, "", "", err
+	}
+
+	_, err = h.userMGR.SetLastSeenAt(currUser.GetObjectMeta().GetName())
+	if err != nil {
+		// Log an error but allow the user to login.
+		logrus.Errorf("error setting LastSeenAt: %v", err)
+	}
+
 	return rToken, unhashedTokenKey, responseType, err
 }

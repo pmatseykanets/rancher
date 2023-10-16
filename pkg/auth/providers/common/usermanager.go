@@ -24,6 +24,7 @@ import (
 	"github.com/sirupsen/logrus"
 	k8srbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	apitypes "k8s.io/apimachinery/pkg/types"
@@ -681,6 +682,18 @@ func (m *userManager) GetUserByPrincipalID(principalName string) (*v3.User, erro
 
 func (m *userManager) DeleteToken(tokenName string) error {
 	return m.tokens.Delete(tokenName, &v1.DeleteOptions{})
+}
+
+func (m *userManager) SetLastSeenAt(userID string) (*v3.User, error) {
+	user, err := m.users.Get(userID, v1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	user.Status.LastSeenAt = metav1.NewTime(time.Now())
+
+	logrus.Infof("Updating user %v. Setting LastSeenAt", user.Name)
+	return m.users.Update(user)
 }
 
 func (m *userManager) checkCache(principalName string) (*v3.User, error) {

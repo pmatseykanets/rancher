@@ -321,3 +321,6 @@ func (m mockUserManager) GetUserByPrincipalID(principalName string) (*v3.User, e
 func (m mockUserManager) GetKubeconfigToken(clusterName, tokenName, description, kind, userName string, userPrincipal v3.Principal) (*v3.Token, string, error) {
 	panic("unimplemented")
 }
+func (m mockUserManager) SetLastSeenAt(userID string) (*v3.User, error) {
+	panic("unimplemented")
+}

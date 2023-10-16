@@ -253,6 +253,9 @@ func (f *fakeUserManager) GetUserByPrincipalID(principalName string) (*apimgmtv3
 func (f *fakeUserManager) GetKubeconfigToken(clusterName, tokenName, description, kind, userName string, userPrincipal apimgmtv3.Principal) (*apimgmtv3.Token, string, error) {
 	return nil, "", nil
 }
+func (f *fakeUserManager) SetLastSeenAt(userID string) (*apimgmtv3.User, error) {
+	return nil, nil
+}
 
 // fakeAuthenticator implements requests.Authenticator for the purposes of testing
 type fakeAuthenticator struct {

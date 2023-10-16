@@ -69,18 +69,26 @@ func NewAuthenticator(ctx context.Context, clusterRouter ClusterRouter, mgmtCtx 
 		userLister:          mgmtCtx.Management.Users("").Controller().Lister(),
 		clusterRouter:       clusterRouter,
 		userAuthRefresher:   providerrefresh.NewUserAuthRefresher(ctx, mgmtCtx),
+		userLastSeenAtSetter: func(userID string) (*v3.User, error) {
+			if mgmtCtx.UserManager != nil {
+				return mgmtCtx.UserManager.SetLastSeenAt(userID)
+			}
+
+			return nil, nil
+		},
 	}
 }
 
 type tokenAuthenticator struct {
-	ctx                 context.Context
-	tokenIndexer        cache.Indexer
-	tokenClient         v3.TokenInterface
-	userAttributes      v3.UserAttributeInterface
-	userAttributeLister v3.UserAttributeLister
-	userLister          v3.UserLister
-	clusterRouter       ClusterRouter
-	userAuthRefresher   providerrefresh.UserAuthRefresher
+	ctx                  context.Context
+	tokenIndexer         cache.Indexer
+	tokenClient          v3.TokenInterface
+	userAttributes       v3.UserAttributeInterface
+	userAttributeLister  v3.UserAttributeLister
+	userLister           v3.UserLister
+	clusterRouter        ClusterRouter
+	userAuthRefresher    providerrefresh.UserAuthRefresher
+	userLastSeenAtSetter func(userID string) (*v3.User, error)
 }
 
 const (
@@ -158,7 +166,23 @@ func (a *tokenAuthenticator) Authenticate(req *http.Request) (*AuthenticatorResp
 	authResp.UserPrincipal = token.UserPrincipal.Name
 	authResp.Groups = groups
 	authResp.Extras = getUserExtraInfo(token, u, attribs)
-	logrus.Debugf("Extras returned %v", authResp.Extras)
+	logrus.Debugf("tokenAuthenticator: extras returned %v", authResp.Extras)
+
+	if a.userLastSeenAtSetter != nil {
+		var isSystemUser bool
+		for _, principalID := range u.PrincipalIDs {
+			if strings.HasPrefix(principalID, "system:") {
+				isSystemUser = true
+				break
+			}
+		}
+
+		if !isSystemUser {
+			if _, err = a.userLastSeenAtSetter(token.UserID); err != nil {
+				logrus.Debugf("tokenAuthenticator: error updating user LastSeenAt %v", err)
+			}
+		}
+	}
 
 	return authResp, nil
 }

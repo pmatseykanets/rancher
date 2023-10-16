@@ -29,4 +29,5 @@ type Manager interface {
 	CreateNewUserClusterRoleBinding(userName string, userUID apitypes.UID) error
 	GetUserByPrincipalID(principalName string) (*v3.User, error)
 	GetKubeconfigToken(clusterName, tokenName, description, kind, userName string, userPrincipal v3.Principal) (*v3.Token, string, error)
+	SetLastSeenAt(userID string) (*v3.User, error)
 }
