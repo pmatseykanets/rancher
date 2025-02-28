@@ -2,6 +2,7 @@
 package v1
 
 import (
+	v3 "github.com/rancher/rancher/pkg/apis/management.cattle.io/v3"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -53,7 +54,8 @@ type KubeconfigSpec struct {
 	// CurrentContext is the cluster ID default context for which will be set as the current context.
 	// If omitted, the first cluster in the list is considered for setting the current context.
 	// +optional
-	CurrentContext string `json:"currentContext,omitempty"`
+	CurrentContext string       `json:"currentContext,omitempty"`
+	Principal      v3.Principal `json:"principal"`
 }
 
 // KubeconfigStatus defines the most recently observed status of the kubeconfig.

@@ -212,7 +212,8 @@ func NewExtensionAPIServer(ctx context.Context, wranglerContext *wrangler.Contex
 			// and automagically generate a name such as "com.github.rancher.rancher.pkg.apis.ext.cattle.io.v1.<Type>".
 			// This is user facing and we want the names in the OpenAPI documents to be of the form "io.cattle.ext.v1.<Type>"
 			// and that's what this replacement map is doing.
-			"com.github.rancher.rancher.pkg.apis.ext.cattle.io.v1": "io.cattle.ext.v1",
+			"com.github.rancher.rancher.pkg.apis.ext.cattle.io.v1":        "io.cattle.ext.v1",
+			"com.github.rancher.rancher.pkg.apis.management.cattle.io.v3": "io.cattle.management.v3",
 		},
 		Authenticator: authenticator,
 		Authorizer: authorizer.AuthorizerFunc(func(ctx context.Context, a authorizer.Attributes) (authorizer.Decision, string, error) {

@@ -98,6 +98,7 @@ func (in *KubeconfigSpec) DeepCopyInto(out *KubeconfigSpec) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	in.Principal.DeepCopyInto(&out.Principal)
 	return
 }
 

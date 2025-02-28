@@ -124,6 +124,7 @@ func main() {
 					"k8s.io/apimachinery/pkg/apis/meta/v1",
 					"k8s.io/apimachinery/pkg/runtime",
 					"k8s.io/apimachinery/pkg/version",
+					"github.com/rancher/rancher/pkg/apis/management.cattle.io/v3",
 				},
 			},
 		},
